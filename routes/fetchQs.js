@@ -1,6 +1,7 @@
 import express from 'express'
 import Airtable from 'airtable'
 import matchIDs from '../tools/matchids.js'
+import makeQsReadable from '../tools/makeqsreadable.js'
 
 const router = express.Router()
 require('dotenv').config()
@@ -63,8 +64,9 @@ router.get('/', (req, res) => {
       console.log(await As)
       console.log(await Cs)
 
-      // const quizData = await matchIDs(questions, answers, choices)
-      return res.json(JSON.stringify(questions, null, 4))
+      const quizData = await matchIDs(questions, answers, choices, makeQsReadable)
+      console.log(JSON.stringify(quizData, null, 4));
+      return res.json(JSON.stringify(quizData, null, 4))
 
 
 
