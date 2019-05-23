@@ -19,53 +19,58 @@ router.get('/', (req, res) => {
       console.log(`Fetching Quiz Data -----------------------`);
 
 
-      const fetchQs = gameLabBase('flashcardQs').select({
-          maxRecords: 100,
-          view: "Grid View"
-        }).then(records => {records.forEach((record) => {
-              console.log('Retrieved', record.get('questionText'))
-              questions.push(record._rawJson)
-          })}
-        ).then(err => {
-          if (err) { console.error(err) return }
-          return 'questions fetched'
-          })
+      const Qs = gameLabBase('flashcardQs').select({
+            maxRecords: 100,
+            view: "Grid view"
+        }).eachPage(function page(records, fetchNextPage) {
 
-      const fetchAs = gameLabBase('fcAnswers').select({
-          maxRecords: 100,
-          view: "Grid View"
-        }).then(records => {records.forEach((record) => {
-              console.log('Retrieved', record.get('questionText'))
-              questions.push(record._rawJson)
-          })}
-        ).then(err => {
-          if (err) { console.error(err) return }
-          return 'questions fetched'
-          })
+            records.forEach(function(record) {
+                console.log('Retrieved', record.get('questionText'));
+                questions.push(record._rawJson)
+            })
+            fetchNextPage()
 
-      const fetchCs = gameLabBase('fcChoices').select({
-          maxRecords: 100,
-          view: "Grid View"
-        }).then(records => {records.forEach((record) => {
-              console.log('Retrieved', record.get('questionText'))
-              questions.push(record._rawJson)
-          })}
-        ).then(err => {
-          if (err) { console.error(err) return }
-          return 'questions fetched'
-          })
+        }).then(() => {return 'got Qs!'})
+
+      const As = gameLabBase('fcAnswers').select({
+            maxRecords: 100,
+            view: "Grid view"
+        }).eachPage(function page(records, fetchNextPage) {
+
+            records.forEach(function(record) {
+                console.log('Retrieved', record.get('name'));
+                answers.push(record._rawJson)
+            })
+            fetchNextPage()
+
+        }).then(() => {return 'got As!'})
+
+      const Cs = gameLabBase('fcChoices').select({
+            maxRecords: 100,
+            view: "Grid view"
+        }).eachPage(function page(records, fetchNextPage) {
+
+            records.forEach(function(record) {
+                console.log('Retrieved', record.get('name'));
+                choices.push(record._rawJson)
+            })
+            fetchNextPage()
+
+        }).then(() => {return 'got Cs!'})
 
 
-      console.log(await fetchQs);
-      console.log(await fetchAs);
-      console.log(await fetchCs);
+      console.log(await Qs)
+      console.log(await As)
+      console.log(await Cs)
 
-      const quizData = matchIDs(questions, answers, choices);
-      return res.json({data: quizData});
+      // const quizData = await matchIDs(questions, answers, choices)
+      return res.json(JSON.stringify(questions, null, 4))
+
+
 
       }
 
-fetchReadableQs(matchIDs);
+fetchReadableQs(matchIDs)
 
 })
 

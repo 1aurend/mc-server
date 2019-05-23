@@ -31,6 +31,6 @@ app.use(bodyParser.json())
 app.use(logger('dev'))
 
 
-app.use('/', fetchQs)
+app.use('/', getQs)
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`))
