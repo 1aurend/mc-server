@@ -1,15 +1,13 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import logger from 'morgan';
-import mongoose from 'mongoose';
-import fetchRecordsRouter from './routes/fetch-records';
-import updateRecordsRouter from './routes/update-records';
-import whatsCookingRouter from './routes/whats-cooking';
-import cors from 'cors';
+import express from 'express'
+import bodyParser from 'body-parser'
+import logger from 'morgan'
+import mongoose from 'mongoose'
+import getQs from './routes/fetchQs.js'
+import cors from 'cors'
 
 
-var whitelist = ['http://localhost:3000', 'http://localhost:3001']
-var corsOptions = {
+const whitelist = ['http://localhost:3000', 'http://localhost:3001']
+const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
       callback(null, true)
@@ -19,21 +17,20 @@ var corsOptions = {
   }
 }
 
-const app = express();
-const router = express.Router();
+const app = express()
+const router = express.Router()
 
-require('dotenv').config();
-
-
-const API_PORT = process.env.API_PORT || 3001;
-
-app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(logger('dev'));
+require('dotenv').config()
 
 
-app.use('/', fetchRecordsRouter);
-app.use('/update-airtable', updateRecordsRouter);
+const API_PORT = process.env.API_PORT || 3001
 
-app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
+app.use(cors())
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+app.use(logger('dev'))
+
+
+app.use('/', fetchQs)
+
+app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`))
