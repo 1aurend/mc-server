@@ -10,7 +10,9 @@ const gameLabBase = new Airtable({apiKey: process.env.GAMELAB_AT_KEY}).base(proc
 
 
 
-router.get('/', (req, res) => {
+router.post('/', (req, res) => {
+
+    let numQs = req.body.num
 
     async function fetchReadableQs(matchIDs) {
 
@@ -21,7 +23,7 @@ router.get('/', (req, res) => {
 
 
       const Qs = gameLabBase('flashcardQs').select({
-            maxRecords: 100,
+            maxRecords: numQs,
             view: "Grid view"
         }).eachPage(function page(records, fetchNextPage) {
 
@@ -64,7 +66,7 @@ router.get('/', (req, res) => {
       console.log(await As)
       console.log(await Cs)
 
-      const quizData = await matchIDs(questions, answers, choices, makeQsReadable)
+      const quizData = matchIDs(questions, answers, choices, makeQsReadable)
       console.log(JSON.stringify(quizData, null, 4));
       return res.json(JSON.stringify(quizData, null, 4))
 

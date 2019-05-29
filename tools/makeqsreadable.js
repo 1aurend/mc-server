@@ -31,7 +31,6 @@ function makeQsReadable(idsArray, questions) {
 
   })
 
-console.log(JSON.stringify(readableQs, null, 4));
 return readableQs
 
 }
