@@ -66,7 +66,7 @@ router.post('/', (req, res) => {
       console.log(await As)
       console.log(await Cs)
 
-      const quizData = await matchIDs(questions, answers, choices, makeQsReadable)
+      const quizData = matchIDs(questions, answers, choices, makeQsReadable)
       console.log(JSON.stringify(quizData, null, 4));
       return res.json(JSON.stringify(quizData, null, 4))
 
