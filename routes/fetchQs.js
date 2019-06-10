@@ -5,16 +5,17 @@ import makeQsReadable from '../tools/makeqsreadable.js'
 
 const router = express.Router()
 require('dotenv').config()
+const cors = require('cors')
 
 const gameLabBase = new Airtable({apiKey: process.env.GAMELAB_AT_KEY}).base(process.env.GAMELAB_BASE_ID)
 
 
 
-router.post('/', (req, res) => {
+router.get('/', cors(), (req, res) => {
 
-    let numQs = req.body.num
+    let numQs = 3
 
-    async function fetchReadableQs(matchIDs) {
+    async function fetchReadableQs() {
 
       let questions = []
       let choices = []
@@ -22,7 +23,7 @@ router.post('/', (req, res) => {
       console.log(`Fetching Quiz Data -----------------------`);
 
 
-      const Qs = gameLabBase('flashcardQs').select({
+      const Qs = gameLabBase('mtQuestions').select({
             maxRecords: numQs,
             view: "Grid view"
         }).eachPage(function page(records, fetchNextPage) {
@@ -35,46 +36,18 @@ router.post('/', (req, res) => {
 
         }).then(() => {return 'got Qs!'})
 
-      const As = gameLabBase('fcAnswers').select({
-            maxRecords: 100,
-            view: "Grid view"
-        }).eachPage(function page(records, fetchNextPage) {
-
-            records.forEach(function(record) {
-                console.log('Retrieved', record.get('name'));
-                answers.push(record._rawJson)
-            })
-            fetchNextPage()
-
-        }).then(() => {return 'got As!'})
-
-      const Cs = gameLabBase('fcChoices').select({
-            maxRecords: 100,
-            view: "Grid view"
-        }).eachPage(function page(records, fetchNextPage) {
-
-            records.forEach(function(record) {
-                console.log('Retrieved', record.get('name'));
-                choices.push(record._rawJson)
-            })
-            fetchNextPage()
-
-        }).then(() => {return 'got Cs!'})
-
 
       console.log(await Qs)
-      console.log(await As)
-      console.log(await Cs)
 
-      const quizData = matchIDs(questions, answers, choices, makeQsReadable)
-      console.log(JSON.stringify(quizData, null, 4));
-      return res.json(JSON.stringify(quizData, null, 4))
+      // const quizData = matchIDs(questions, answers, choices, makeQsReadable)
+      console.log(JSON.stringify(questions, null, 4));
+      return res.json(JSON.stringify(questions, null, 4))
 
 
 
       }
 
-fetchReadableQs(matchIDs)
+fetchReadableQs()
 
 })
 
